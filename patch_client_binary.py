@@ -1,7 +1,6 @@
-import struct, argparse
+import re, struct, argparse
 from rsa_common import find_modulus_offsets, load_pem_modulus_n, XOR_START_IDX
 
-BINARY_HEADER = 0x400000 # After PE (x86 EXE) Header
 
 
 def load_pem_modulus_words(pem_path):
@@ -36,22 +35,19 @@ def patch_skip_play_exe(bin_data):
     """
     try:
         # Patch 1: Patch number args conquer.exe ran with check (so args >=1 will always be true)
-        argc_check = bin_data.find(b'\x83\xbd\xe8\xfd\xff\xff\x01\x0f\x8d') # argc check
-        if argc_check == -1:
+        argc_match = re.search(rb'\x83\xbd..\xff\xff\x01\x0f\x8d', bytes(bin_data))
+        if not argc_match:
             raise ValueError("argc count check pattern not found")
+        argc_check = argc_match.start()
         bin_data[argc_check + 7:argc_check + 9] = b'\x90\xe9'  # JGE (Jump greater equal) -> NOP + JMP (always jump)
         print("Skip play.exe requirement patch 1 of 2 successful: argc count check (JGE -> JMP)")
 
-        # Patch 2: Always true "blacknull" arg check. bn = blacknull
-        bn_loc = bytes(bin_data).find(b'blacknull\x00') # Find location of 'blacknull' (different between patches)
-        if bn_loc == -1:
-            raise ValueError("blacknull string not found")
-
-        bn_addr = struct.pack('<I', BINARY_HEADER + bn_loc)
-        bn_push_loc = bytes(bin_data).find(b'\x68' + bn_addr)
-        if bn_push_loc == -1 or bin_data[bn_push_loc + 20:bn_push_loc + 22] != b'\x85\xc0':
+        # Patch 2: Always true "blacknull" arg check
+        pattern = rb'\x61\x68....\x8d\x85....\x50\xff\x15....\x59\x59\x85\xc0'
+        match = re.search(pattern, bytes(bin_data), re.DOTALL)
+        if not match:
             raise ValueError("blacknull pattern not found")
-        bin_data[bn_push_loc + 20] = 0x31  # test -> xor
+        bin_data[match.end() - 2] = 0x31  # test eax,eax (85 C0) -> xor eax,eax (31 C0)
         print("Skip play.exe requirement patch 2 of 2 successful: blacknull check (test -> xor)")
 
     except ValueError as e:
