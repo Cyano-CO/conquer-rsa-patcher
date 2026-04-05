@@ -35,20 +35,33 @@ def patch_skip_play_exe(bin_data):
     """
     try:
         # Patch 1: Patch number args conquer.exe ran with check (so args >=1 will always be true)
-        argc_match = re.search(rb'\x83\xbd..\xff\xff\x01\x0f\x8d', bytes(bin_data))
-        if not argc_match:
+        argc_patterns = [
+            (rb'\x83\xf8\x05\x0f\x94\xc1\x83\xf8\x01\x88\x0d....\x7d', 1, b'\xeb'), # 6090 (Find JGE, Patch to JMP)
+            (rb'\x83\xbd..\xff\xff\x01\x0f\x8d', 2, b'\x90\xe9') # 5517/5187/5615 (Find JGE, Patch to JMP)
+        ]
+        for pattern, end_offset, patch in argc_patterns:
+            m = re.search(pattern, bytes(bin_data))
+            if m:
+                bin_data[m.end() - end_offset:m.end() - end_offset + len(patch)] = patch
+                print("Skip play.exe requirement patch 1 of 2 successful: argc count check (JGE -> JMP)")
+                break
+        else:
             raise ValueError("argc count check pattern not found")
-        argc_check = argc_match.start()
-        bin_data[argc_check + 7:argc_check + 9] = b'\x90\xe9'  # JGE (Jump greater equal) -> NOP + JMP (always jump)
-        print("Skip play.exe requirement patch 1 of 2 successful: argc count check (JGE -> JMP)")
 
         # Patch 2: Always true "blacknull" arg check (bn = blacknull)
-        bn_match = rb'\x61\x68....\x8d\x85....\x50\xff\x15....\x59\x59\x85\xc0'
-        match = re.search(bn_match, bytes(bin_data), re.DOTALL)
-        if not match:
+        bn_patterns = [
+            rb'\x61\x68....\x8d\x85....\x50\xff\x15....\x59\x59\x85\xc0', # 5517/5187/5615 (Find test eax,eax)
+            rb'\x8d\x45\x1c\x68....\x50\xff\x15....\x59\x59\x85\xc0' # 6090+ (Find test eax,eax)
+        ]
+        for pattern in bn_patterns:
+            match = re.search(pattern, bytes(bin_data), re.DOTALL)
+            if match:
+                bin_data[match.end() - 2] = 0x31  # test -> xor
+                print("Skip play.exe requirement patch 2 of 2 successful: blacknull check (test -> xor)")
+                break
+        else:
             raise ValueError("blacknull pattern not found")
-        bin_data[match.end() - 2] = 0x31  # test -> xor
-        print("Skip play.exe requirement patch 2 of 2 successful: blacknull check (test -> xor)")
+
 
     except ValueError as e:
         print(f"Optional patch skip play.exe requirement failed: ({e}). "

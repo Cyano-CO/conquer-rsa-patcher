@@ -128,7 +128,7 @@ The following binary patches have been tested and works (other patches may also 
 | 5517 (Windows) | ✅                | ✅                     | ✅          |
 | 5517 (Mac)     | ✅                | ❌                     | Not Tested |
 | 5615           | ✅                | ✅                     | ✅          |
-| 6090           | ✅                | ❌                     | Not Tested |
+| 6090           | ✅                | ✅                     | ✅          |
 
 ## Typical Workflow
 
