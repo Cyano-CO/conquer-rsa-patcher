@@ -42,12 +42,12 @@ def patch_skip_play_exe(bin_data):
         bin_data[argc_check + 7:argc_check + 9] = b'\x90\xe9'  # JGE (Jump greater equal) -> NOP + JMP (always jump)
         print("Skip play.exe requirement patch 1 of 2 successful: argc count check (JGE -> JMP)")
 
-        # Patch 2: Always true "blacknull" arg check
-        pattern = rb'\x61\x68....\x8d\x85....\x50\xff\x15....\x59\x59\x85\xc0'
-        match = re.search(pattern, bytes(bin_data), re.DOTALL)
+        # Patch 2: Always true "blacknull" arg check (bn = blacknull)
+        bn_match = rb'\x61\x68....\x8d\x85....\x50\xff\x15....\x59\x59\x85\xc0'
+        match = re.search(bn_match, bytes(bin_data), re.DOTALL)
         if not match:
             raise ValueError("blacknull pattern not found")
-        bin_data[match.end() - 2] = 0x31  # test eax,eax (85 C0) -> xor eax,eax (31 C0)
+        bin_data[match.end() - 2] = 0x31  # test -> xor
         print("Skip play.exe requirement patch 2 of 2 successful: blacknull check (test -> xor)")
 
     except ValueError as e:
