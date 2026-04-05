@@ -1,0 +1,7 @@
+test/
+venv/
+**/*.exe
+**/*.dat
+**/*.DAT
+**/*.pem
+__pycache__/*
