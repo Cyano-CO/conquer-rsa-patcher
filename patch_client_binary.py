@@ -34,13 +34,17 @@ def patch_skip_play_exe(bin_data):
     So we do 2 binary patches so that this arg always appears to be set
     """
     try:
+        orig_data = bytes(bin_data)
+        
         # Patch 1: Patch number args conquer.exe ran with check (so args >=1 will always be true)
+        # Tuple: "Byte Pattern To Find", "How many bytes from end of match to apply patch", "Byte Pattern To Replace Match With"
         argc_patterns = [
-            (rb'\x83\xf8\x05\x0f\x94\xc1\x83\xf8\x01\x88\x0d....\x7d', 1, b'\xeb'), # 6090 (Find JGE, Patch to JMP)
-            (rb'\x83\xbd..\xff\xff\x01\x0f\x8d', 2, b'\x90\xe9') # 5517/5187/5615 (Find JGE, Patch to JMP)
+            (rb'\x83\xf8\x05\x0f\x94\xc1\x83\xf8\x01\x88\x0d....\x7d', 1, b'\xeb'),  # 6090/6609 (Find JGE short, Patch to JMP short)
+            (rb'\x83\xbd..\xff\xff\x01\x0f\x8d',2, b'\x90\xe9'),  # 5187/5517/5615 (Find JGE, Patch to JMP)
+            (rb'\x83\xc4\x14\x83\xf8\x01\x7c',1, b'\x90\x90'),  # 5095 (Find JL short, Patch to NOP NOP)
         ]
         for pattern, end_offset, patch in argc_patterns:
-            m = re.search(pattern, bytes(bin_data))
+            m = re.search(pattern, orig_data)
             if m:
                 bin_data[m.end() - end_offset:m.end() - end_offset + len(patch)] = patch
                 print("Skip play.exe requirement patch 1 of 2 successful: argc count check (JGE -> JMP)")
@@ -50,11 +54,12 @@ def patch_skip_play_exe(bin_data):
 
         # Patch 2: Always true "blacknull" arg check (bn = blacknull)
         bn_patterns = [
-            rb'\x61\x68....\x8d\x85....\x50\xff\x15....\x59\x59\x85\xc0', # 5517/5187/5615 (Find test eax,eax)
-            rb'\x8d\x45\x1c\x68....\x50\xff\x15....\x59\x59\x85\xc0' # 6090+ (Find test eax,eax)
+            rb'\x61\x68....\x8d\x85....\x50\xff\x15....\x59\x59\x85\xc0',   # 5187/5517/5615 (Find test eax,eax, Patch to xor eax,eax)
+            rb'\x8d\x45\x1c\x68....\x50\xff\x15....\x59\x59\x85\xc0',       # 6090/6609 (Find test eax,eax, Patch to xor eax,eax)
+            rb'\x83\xf8\x01\x7c.\x8d\x85....\x68....\x50\xff\x15....\x59\x85\xc0', # 5095 (Find test eax,eax, Patch to xor eax,eax)
         ]
         for pattern in bn_patterns:
-            match = re.search(pattern, bytes(bin_data), re.DOTALL)
+            match = re.search(pattern, orig_data, re.DOTALL)
             if match:
                 bin_data[match.end() - 2] = 0x31  # test -> xor
                 print("Skip play.exe requirement patch 2 of 2 successful: blacknull check (test -> xor)")

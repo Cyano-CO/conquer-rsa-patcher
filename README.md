@@ -122,13 +122,19 @@ By default the patcher also bypasses the play.exe launcher requirement, allowing
 
 The following binary patches have been tested and works (other patches may also work but not tested):
 
-| Patch          | Patch Public Key | Patch bypass play.exe | Game Runs  |
-|:---------------|:-----------------|:----------------------|:-----------|
-| 5187           | ✅                | ✅                     | ✅          |
-| 5517 (Windows) | ✅                | ✅                     | ✅          |
-| 5517 (Mac)     | ✅                | ❌                     | Not Tested |
-| 5615           | ✅                | ✅                     | ✅          |
-| 6090           | ✅                | ✅                     | ✅          |
+| Patch            | Patch Public Key | Patch bypass play.exe | Game Runs  |
+|:-----------------|:-----------------|:----------------------|:-----------|
+| 5095             | ✅                | ✅                     | ✅          |
+| 5187             | ✅                | ✅                     | ✅          |
+| 5517 (Windows)   | ✅                | ✅                     | ✅          |
+| 5517 (Mac)       | ✅                | ❌                     | Not Tested |
+| 5615             | ✅                | ✅                     | ✅          |
+| 6090             | ✅                | ✅                     | ✅          |
+| 6609 (DX8 & DX9) | ✅                | ✅                     | ✅          |
+
+* This project doesn't intent to support patches lower than 5095 (circa when RSA encrypted Server.dat was added)
+* This project doesn't intend to support patches greater than 6609 (the last Conquer 2.0 patch)
+* This project **never** intends to support live binaries.
 
 ## Typical Workflow
 
