@@ -4,6 +4,9 @@ Tools for working with the RSA public key baked into the Conquer Online client b
 
 See the [RSA wiki page](https://github.com/conquer-online/wiki/blob/main/src/security/rsa.md) for full technical background. 
 
+> [!NOTE]
+> These scripts are written by [Cyano-CO](https://github.com/Cyano-CO) for any issues or feedback please use the forum post on [cooldown.dev](https://cooldown.dev/topic/778-tool-conquer-rsa-dat-file-decryptencrypt-client-patcher/).
+
 ## Table of Contents
 
 - [Setup](#setup)
