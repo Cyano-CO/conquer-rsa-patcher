@@ -26,7 +26,7 @@ See the [RSA wiki page](https://github.com/conquer-online/wiki/blob/main/src/sec
 > - No warranty given. As with all code, read & understand it before executing it.
 
 > [!NOTE]
-> The `Conquer.exe` binary is not included and must be supplied by you.
+> The `Conquer.exe` binary **is not included** and must be supplied by you. These scripts also work on the Mac Conquer client, for which the binary to use is: `/Applications/Conquer.app/Contents/ConquerGameExe.app/Contents/MacOS/ConquerGameExe`
 
 
 ### Setup
@@ -125,15 +125,17 @@ By default the patcher also bypasses the play.exe launcher requirement, allowing
 
 The following binary patches have been tested and works (other patches may also work but not tested):
 
-| Patch            | Patch Public Key | Patch bypass play.exe | Game Runs  |
-|:-----------------|:-----------------|:----------------------|:-----------|
-| 5095             | ✅                | ✅                     | ✅          |
-| 5187             | ✅                | ✅                     | ✅          |
-| 5517 (Windows)   | ✅                | ✅                     | ✅          |
-| 5517 (Mac)       | ✅                | ❌                     | Not Tested |
-| 5615             | ✅                | ✅                     | ✅          |
-| 6090             | ✅                | ✅                     | ✅          |
-| 6609 (DX8 & DX9) | ✅                | ✅                     | ✅          |
+| Patch                            | Patch Public Key | Patch bypass play.exe | Game Runs |
+|:---------------------------------|:-----------------|:----------------------|:----------|
+| 5095                             | ✅                | ✅                     | ✅         |
+| 5187                             | ✅                | ✅                     | ✅         |
+| 5517 (Windows)                   | ✅                | ✅                     | ✅         |
+| 1029 (Mac equivalent of 5517) 🔶 | ✅                | Not Applicable        | ✅         |
+| 5615                             | ✅                | ✅                     | ✅         |
+| 6090                             | ✅                | ✅                     | ✅         |
+| 6609 (DX8 & DX9)                 | ✅                | ✅                     | ✅         |
+
+🔶 For Mac, use: `/Applications/Conquer.app/Contents/ConquerGameExe.app/Contents/MacOS/ConquerGameExe`
 
 * This project doesn't intent to support patches lower than 5095 (circa when RSA encrypted Server.dat was added)
 * This project doesn't intend to support patches greater than 6609 (the last Conquer 2.0 patch)
